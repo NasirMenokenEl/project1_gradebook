@@ -1,0 +1,141 @@
+// CSC121Project1.cpp : This file contains the 'main' function. Program execution begins and ends there.
+//
+#include <iostream>
+#include <vector>
+#include <string>
+using namespace std;
+
+struct Student {
+    string name;
+    double grade;
+};
+
+// Counter-controlled input
+void counterControlled(vector<Student>& students) {
+    int n;
+    cout << "\nEnter the number of students: ";
+    cin >> n;
+    cin.ignore();
+
+    for (int i = 0; i < n; i++) {
+        Student s;
+
+        cout << "\nEnter name of student " << i + 1 << ": ";
+        getline(cin, s.name);
+
+        cout << "Enter grade of student " << i + 1 << " (0-100): ";
+        cin >> s.grade;
+
+        while (s.grade < 0 || s.grade > 100) {
+            cout << "Invalid grade! Enter between 0-100: ";
+            cin >> s.grade;
+        }
+
+        cin.ignore();
+        students.push_back(s);
+    }
+}
+
+// Sentinel-controlled input
+void sentinelControlled(vector<Student>& students) {
+    while (true) {
+        Student s;
+
+        cout << "\nEnter student name (or type 'STOP' to stop): ";
+        getline(cin, s.name);
+        if (s.name == "STOP") break;
+
+        cout << "Enter student grade (or -1 to stop): ";
+        cin >> s.grade;
+        if (s.grade == -1) {
+            cin.ignore();
+            break;
+        }
+
+        while (s.grade < 0 || s.grade > 100) {
+            cout << "Invalid grade! Enter between 0-100: ";
+            cin >> s.grade;
+        }
+
+        cin.ignore();
+        students.push_back(s);
+    }
+}
+
+// Display students with Pass/Fail
+void displayStudents(const vector<Student>& students) {
+    cout << "\n--- Student List ---\n";
+    for (const auto& s : students) {
+        string status = (s.grade <= 59) ? "Fail" : "Pass";
+        cout << "Name: " << s.name
+            << ", Grade: " << s.grade
+            << " --> " << status << endl;
+    }
+}
+
+// Compute stats (one pass)
+void computeStats(const vector<Student>& students) {
+    if (students.empty()) {
+        cout << "\nNo student data available.\n";
+        return;
+    }
+
+    double total = 0;
+    double highest = students[0].grade;
+    double lowest = students[0].grade;
+
+    for (const auto& s : students) {
+        total += s.grade;
+        if (s.grade > highest) highest = s.grade;
+        if (s.grade < lowest) lowest = s.grade;
+    }
+
+    double average = total / students.size();
+
+    cout << "\n--- Class Statistics ---\n";
+    cout << "Number of students: " << students.size() << endl;
+    cout << "Average grade: " << average << endl;
+    cout << "Highest grade: " << highest << endl;
+    cout << "Lowest grade: " << lowest << endl;
+}
+
+int main() {
+    cout << "Hello, Gradebook.\n";
+
+    vector<Student> students;
+    int choice;
+
+    do {
+        cout << "\n===== MENU =====\n";
+        cout << "1. Enter students (Counter-Controlled)\n";
+        cout << "2. Enter students (Sentinel-Controlled)\n";
+        cout << "3. Display all students (with Pass/Fail)\n";
+        cout << "4. Show class statistics\n";
+        cout << "5. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+        cin.ignore();
+
+        switch (choice) {
+        case 1:
+            counterControlled(students);
+            break;
+        case 2:
+            sentinelControlled(students);
+            break;
+        case 3:
+            displayStudents(students);
+            break;
+        case 4:
+            computeStats(students);
+            break;
+        case 5:
+            cout << "Exiting Gradebook. Goodbye!\n";
+            break;
+        default:
+            cout << "Invalid choice. Try again.\n";
+        }
+    } while (choice != 5);
+
+    return 0;
+} 
